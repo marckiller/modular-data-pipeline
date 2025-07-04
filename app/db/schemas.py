@@ -9,6 +9,7 @@ class AgentCreateRequest(BaseModel):
 
 class AgentResponse(BaseModel):
     id: int
+    api_key: str
     name: str
     description: Optional[str] = None
     config: Optional[dict] = None
@@ -19,7 +20,7 @@ class AgentResponse(BaseModel):
         from_attributes = True
 
 class ReadingCreateRequest(BaseModel):
-    agent_id: int
+    api_key: str
     data: dict
 
 class ReadingResponse(BaseModel):

@@ -2,13 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import models, schemas
+
 from app.db.database import get_db
+from app.utils.security import generate_api_key
 
 router = APIRouter()
 
 @router.post("/agents", response_model=schemas.AgentResponse)
 def create_agent(agent: schemas.AgentCreateRequest, db: Session = Depends(get_db)):
-    db_agent = models.Agent(**agent.dict())
+    api_key = generate_api_key()
+    db_agent = models.Agent(api_key=api_key,**agent.dict())
     db.add(db_agent)
     db.commit()
     db.refresh(db_agent)

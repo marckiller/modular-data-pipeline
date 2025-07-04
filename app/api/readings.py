@@ -8,7 +8,12 @@ router = APIRouter()
 
 @router.post("/readings", response_model=schemas.ReadingResponse)
 def create_reading(reading: schemas.ReadingCreateRequest, db: Session = Depends(get_db)):
-    db_reading = models.Reading(**reading.dict())
+    agent = db.query(models.Agent).filter(models.Agent.api_key == reading.api_key).first()
+    if not agent:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    
+    reading_data = reading.dict(exclude={"api_key"})
+    db_reading = models.Reading(**reading_data, agent_id=agent.id)
     db.add(db_reading)
     db.commit()
     db.refresh(db_reading)
