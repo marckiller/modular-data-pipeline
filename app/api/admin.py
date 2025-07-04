@@ -6,18 +6,19 @@ from app.db import models, schemas
 from app.db.database import get_db
 from app.utils.security import verify_admin_token
 
+from app.services.admin_service import list_readings_for_agent, get_reading_by_id, get_latest_reading_for_agent, list_all_agents, get_agent_by_id, list_readings_for_agent
+
 router = APIRouter()
 
 @router.get("/admin/agents", response_model=list[schemas.AgentInfoResponse], dependencies=[Depends(verify_admin_token)])
 def list_agents(db: Session = Depends(get_db)):
-    return db.query(models.Agent).all()
+    return list_all_agents(db)
 
 @router.get("/admin/agents/{agent_id}", response_model=schemas.AgentInfoResponse, dependencies=[Depends(verify_admin_token)])
 def get_agent(agent_id: int, db: Session = Depends(get_db)):
-    agent = db.query(models.Agent).filter(models.Agent.id == agent_id).first()
-    if not agent:
-        raise HTTPException(status_code=404, detail="Agent not found")
-    return agent
+    return get_agent_by_id(agent_id, db)
+
+from app.services.admin_service import list_readings_for_agent
 
 @router.get("/admin/agents/{agent_id}/readings", response_model=list[schemas.ReadingResponse], dependencies=[Depends(verify_admin_token)])
 def list_agent_readings(
@@ -25,32 +26,13 @@ def list_agent_readings(
     db: Session = Depends(get_db),
     limit: int | None = Query(None, gt=0),
     from_date: datetime | None = None,
-    to_date: datetime | None = None
-):
-    query = db.query(models.Reading).filter(models.Reading.agent_id == agent_id)
-    
-    if from_date:
-        query = query.filter(models.Reading.received_at >= from_date)
-    if to_date:
-        query = query.filter(models.Reading.received_at <= to_date)
-
-    query = query.order_by(models.Reading.received_at.desc())
-
-    if limit:
-        query = query.limit(limit)
-
-    return query.all()
+    to_date: datetime | None = None):
+    return list_readings_for_agent(agent_id, db, limit, from_date, to_date)
 
 @router.get("/admin/agents/{agent_id}/readings/latest", response_model=schemas.ReadingResponse, dependencies=[Depends(verify_admin_token)])
 def get_agent_latest_reading(agent_id: int, db: Session = Depends(get_db)):
-    reading = db.query(models.Reading).filter(models.Reading.agent_id == agent_id).order_by(models.Reading.received_at.desc()).first()
-    if not reading:
-        raise HTTPException(status_code=404, detail="No readings found for agent")
-    return reading
+    return get_latest_reading_for_agent(agent_id, db)
 
 @router.get("/admin/readings/{reading_id}", response_model=schemas.ReadingResponse, dependencies=[Depends(verify_admin_token)])
-def get_reading_by_id(reading_id: int, db: Session = Depends(get_db)):
-    reading = db.query(models.Reading).filter(models.Reading.id == reading_id).first()
-    if not reading:
-        raise HTTPException(status_code=404, detail="Reading not found")
-    return reading
+def read_reading_by_id(reading_id: int, db: Session = Depends(get_db)):
+    return get_reading_by_id(reading_id, db)
