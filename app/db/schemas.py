@@ -16,7 +16,7 @@ class AgentResponse(BaseModel):
     last_active: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ReadingCreateRequest(BaseModel):
     agent_id: int
@@ -25,8 +25,8 @@ class ReadingCreateRequest(BaseModel):
 class ReadingResponse(BaseModel):
     id: int
     agent_id: int
-    recieved_at: datetime
+    received_at: datetime
     data: dict
 
     class Config:
-        orm_mode = True
+        from_attributes = True
