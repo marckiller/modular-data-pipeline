@@ -2,12 +2,27 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 
-class AgentCreateRequest(BaseModel):
+#Agent registration
+
+class AgentRegisterRequest(BaseModel):
     name: str
     description: Optional[str] = None
     config: Optional[dict] = None
 
-class AgentResponse(BaseModel):
+class AgentRegisterResponse(BaseModel):
+    id: int
+    api_key: str
+    name: str
+    description: Optional[str] = None
+    config: Optional[dict] = None
+    created_at: datetime
+    last_active: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+#Agent checks
+class AgentInfoResponse(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
@@ -18,8 +33,8 @@ class AgentResponse(BaseModel):
     class Config:
         from_attributes = True
 
+#Reading creation and retrieval
 class ReadingCreateRequest(BaseModel):
-    agent_id: int
     data: dict
 
 class ReadingResponse(BaseModel):
@@ -30,3 +45,21 @@ class ReadingResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AgentLastReadingResponse(BaseModel):
+    id: int
+    agent_id: int
+    received_at: datetime
+    data: dict
+
+    class Config:
+        from_attributes = True
+
+class ListAgentsResponse(BaseModel):
+    agents: List[AgentInfoResponse]
+
+class AgentReadingsResponse(BaseModel):
+    readings: List[ReadingResponse]
+
+
+

@@ -20,6 +20,7 @@ class Agent(Base):
     __tablename__ = "agents"
 
     id = Column(Integer, primary_key=True, index=True)
+    api_key = Column(String, unique=True, nullable=False, index=True)
     name = Column(String, index=True)
     description = Column(String, nullable=True)
     config = Column(JSON, nullable=True)
