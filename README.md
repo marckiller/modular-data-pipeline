@@ -1,6 +1,12 @@
 # modular-data-pipeline
 
-A modular backend system for collecting, storing, and processing data from autonomous agents.
+`modular-data-pipeline` is a modular backend system for collecting, storing, and sharing data from autonomous agents.
+
+It acts as a central data hub — a backend platform that receives and stores time-stamped readings from multiple external agents.  
+Agents are lightweight programs (e.g., web data collectors or sensors) that fetch data from various sources and send it to this backend using a REST API.
+
+If you're starting from scratch, it's easy to begin with the companion project [`agentkit`](https://github.com/marckiller/agentkit),  
+which provides a minimal SDK to build and run agents that integrate directly with this backend.
 
 ## Features
 
@@ -16,7 +22,28 @@ A modular backend system for collecting, storing, and processing data from auton
 3. Admins can access all agents and data via secured `/admin/*` routes
 4. Data is stored and exposed using SQLAlchemy models and Pydantic schemas
 
+## API Endpoints
+
+### Agent endpoints
+
+- `POST /agent/register` – Register a new agent and receive a token
+- `POST /agent/readings` – Submit data using token
+- `GET /agent/ping` – Heartbeat mechanism
+
+### Admin endpoints
+
+- `GET /admin/agents` – List all agents
+- `GET /admin/readings` – Access all readings
+- (Authentication via admin token required — the token must match `ADMIN_API_KEY` from the `.env` file)
+
 ## Running
+
+First, create a `.env` file in the root directory with your configuration. Example:
+
+```
+DATABASE_URL=sqlite:///./database.db
+ADMIN_API_KEY=abcdef
+```
 
 Before running the app locally for the first time, initialize the database:
 
@@ -36,19 +63,20 @@ API docs available at: [http://localhost:8000/docs](http://localhost:8000/docs)
 PYTHONPATH=. pytest --cov=app --cov-report=term-missing
 ```
 
-## Structure
+## Project Structure
 
 ```
 app/
-  api/        # FastAPI routers
-  core/       # config and constants
-  db/         # database models and schemas
-  services/   # business logic
-  utils/      # helper functions
-tests/
+├── api/        # FastAPI routers
+├── core/       # App config and constants
+├── db/         # SQLAlchemy models and Pydantic schemas
+├── services/   # Business logic
+└── utils/      # Utility functions
+tests/          # Pytest unit tests
 ```
 
-## In Development
+## Development
 
-- Agent SDK (`agentkit`) to simplify agent creation
-- Web-based dashboard for monitoring readings
+Planned features:
+- Web dashboard for live monitoring
+- More flexible agent SDK (`agentkit`)
