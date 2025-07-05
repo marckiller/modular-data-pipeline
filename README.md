@@ -73,6 +73,7 @@ app/
 ├── services/   # Business logic
 └── utils/      # Utility functions
 tests/          # Pytest unit tests
+.env            # configuration and admin token
 ```
 
 ## Development
