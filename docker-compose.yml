@@ -18,8 +18,8 @@ services:
       - db
     environment:
       # Compose a PostgreSQL connection string for SQLAlchemy
-      DATABASE_URL: postgres://postgres:postgres@db:5432/modular_data
-      ADMIN_API_KEY: change_me
+      DATABASE_URL: ${DATABASE_URL}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
     ports:
       - "8000:8000"
     # Restart always to handle crashes
