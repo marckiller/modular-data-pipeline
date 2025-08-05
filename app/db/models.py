@@ -44,6 +44,7 @@ class Reading(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     agent_id = Column(Integer, ForeignKey("agents.id"), nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
     received_at = Column(DateTime, default=datetime.utcnow)
     data = Column(JSON, nullable=False)
 
