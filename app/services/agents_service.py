@@ -19,8 +19,21 @@ def add_agent_readings(
     db: Session,
     current_agent: models.Agent
 ) -> dict:
-    db_reading = models.Reading(agent_id=current_agent.id, data=reading.data)
+    """
+    Persist a new reading for the given agent.  If the agent provided a
+    timestamp, use it; otherwise fall back to the current UTC time.  Also
+    update the agent's ``last_active`` field to reflect that it just sent
+    data.
+    """
+    ts = reading.timestamp or datetime.utcnow()
+    db_reading = models.Reading(
+        agent_id=current_agent.id,
+        data=reading.data,
+        timestamp=ts
+    )
     db.add(db_reading)
+    # bump last_active to now
+    current_agent.last_active = datetime.utcnow()
     db.commit()
     return {"status": "reading accepted"}
 
@@ -28,6 +41,8 @@ def ask_for_ping(
     db: Session,
     current_agent: models.Agent
 ) -> dict:
+    current_agent.last_active = datetime.utcnow()
+    db.commit()
     return {"status": "pong"}
 
 def get_agents_last_reading(

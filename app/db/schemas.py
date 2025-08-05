@@ -34,11 +34,13 @@ class AgentInfoResponse(BaseModel):
 #Reading creation and retrieval
 class ReadingCreateRequest(BaseModel):
     data: dict
+    timestamp: Optional[datetime] = None
 
 class ReadingResponse(BaseModel):
     id: int
     agent_id: int
     received_at: datetime
+    timestamp: datetime
     data: dict
 
     model_config = ConfigDict(from_attributes=True)
@@ -47,6 +49,7 @@ class AgentLastReadingResponse(BaseModel):
     id: int
     agent_id: int
     received_at: datetime
+    timestamp: datetime
     data: dict
 
     model_config = ConfigDict(from_attributes=True)

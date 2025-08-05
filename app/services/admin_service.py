@@ -22,11 +22,11 @@ def list_readings_for_agent(
     query = db.query(models.Reading).filter(models.Reading.agent_id == agent_id)
 
     if from_date:
-        query = query.filter(models.Reading.received_at >= from_date)
+        query = query.filter(models.Reading.timestamp >= from_date)
     if to_date:
-        query = query.filter(models.Reading.received_at <= to_date)
+        query = query.filter(models.Reading.timestamp <= to_date)
 
-    query = query.order_by(models.Reading.received_at.desc())
+    query = query.order_by(models.Reading.timestamp.desc())
 
     if limit:
         query = query.limit(limit)
@@ -34,7 +34,7 @@ def list_readings_for_agent(
     return query.all()
 
 def get_latest_reading_for_agent(agent_id: int, db: Session) -> models.Reading | None:
-    reading = db.query(models.Reading).filter(models.Reading.agent_id == agent_id).order_by(models.Reading.received_at.desc()).first()
+    reading = db.query(models.Reading).filter(models.Reading.agent_id == agent_id).order_by(models.Reading.timestamp.desc()).first()
     if not reading:
         raise HTTPException(status_code=404, detail="No readings found for agent")
     return reading
